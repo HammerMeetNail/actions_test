@@ -7,6 +7,8 @@ on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
+    tags:
+      - 'v*'
   pull_request_target:
     types: [labeled]
     branches: [ main ]
@@ -23,7 +25,26 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
+  build-install-zip:
+    name: "Build Installer"
+    runs-on: ubuntu-latest
+    if: github.event.release.tag_name
+    steps:
+      # Checkout target branch for release build
+      - name: Checkout 
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.release.tag_name }} 
+
+      - name: Build txt file
+        run: CLIENT=docker RELEASE_VERSION=${{ github.event.release.tag_name }} make build-txt
+
+      - name: Upload txt file
+        uses: actions/upload-artifact@v3
+        with:
+          name: txt-${{ github.event.release.tag_name }}-test
+          path: echo-test.txt
+          retention-days: 1
   publish-release:
     name: "Publish Release"
     runs-on: ubuntu-latest
