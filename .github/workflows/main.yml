@@ -28,20 +28,21 @@ jobs:
   build-install-zip:
     name: "Build Installer"
     runs-on: ubuntu-latest
+    if: github.ref_name
     steps:
       # Checkout target branch for release build
       - name: Checkout 
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.release.tag_name }} 
+          ref: ${{ github.ref_name }} 
 
       - name: Build txt file
-        run: CLIENT=docker RELEASE_VERSION=${{ github.event.release.tag_name }} make build-txt
+        run: CLIENT=docker RELEASE_VERSION=${{ github.ref_name }} make build-txt
 
       - name: Upload txt file
         uses: actions/upload-artifact@v3
         with:
-          name: txt-${{ github.event.release.tag_name }}-test
+          name: txt-${{ github.ref_name }}-test
           path: echo-test.txt
           retention-days: 1
   publish-release:
