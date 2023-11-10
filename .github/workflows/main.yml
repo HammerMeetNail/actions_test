@@ -28,7 +28,6 @@ jobs:
   build-install-zip:
     name: "Build Installer"
     runs-on: ubuntu-latest
-    if: github.event.release.tag_name
     steps:
       # Checkout target branch for release build
       - name: Checkout 
